@@ -31,43 +31,52 @@ func generateExpectedFizzBuzz(n int) string {
 
 // function to test fizzBuzz
 func TestFizzBuzz(t *testing.T) {
-	// t.Run allows you to run subtests within a test function
+	// Define a custom assertion function to check the correctness of FizzBuzz output
+	assertFizzBuzzOutput := func(t *testing.T, n int, got, want string) {
+		t.Helper() // Marks this function as a helper function, which is skipped during stack traces
+		if got != want {
+			// If the actual output does not match the expected output, report an error
+			t.Errorf("For n = %d, got:\n%s\nwant:\n%s", n, got, want)
+		}
+	}
+
+	// Test for FizzBuzz for 100 iterations
 	t.Run("testing FizzBuzz for 100 iterations", func(t *testing.T) {
 		n := 100
-		expected := generateExpectedFizzBuzz(n) // generate the expected fizzBuzz output sequence
 
-		got := fizzBuzz(n) // call the fizzBuzz function
+		expected := generateExpectedFizzBuzz(n) // Generate the expected FizzBuzz output sequence
+		got := fizzBuzz(n)                      // Call the fizzBuzz function to get the actual output
 
-		if got != expected { // compare the expected and the actual output
-			t.Errorf("For n = %d, expected:\n%s\nbut got:\n%s", n, expected, got) // if no match report the error
-		}
+		assertFizzBuzzOutput(t, n, got, expected) // Compare the expected and actual FizzBuzz output
 	})
 
-	// Test for n divisible by 15 special case
+	// Test for FizzBuzz for numbers divisible by both 3 and 5
 	t.Run("testing FizzBuzz for numbers divisible by both 3 and 5", func(t *testing.T) {
-		for _, n := range []int{15, 30, 45, 60, 75, 90} {
-			// Run a subtest for each number
+
+		divisibleBy15 := []int{15, 30, 45, 60, 75, 90} // List of numbers divisible by both 3 and 5
+
+		for _, n := range divisibleBy15 {
+
 			t.Run(fmt.Sprintf("testing FizzBuzz for n = %d", n), func(t *testing.T) {
-				// Generate the expected output for the current number
-				expected := generateExpectedFizzBuzz(n)
-				// Call the fizzBuzz function for the current number
-				got := fizzBuzz(n)
-				// Check if the actual output matches the expected output
-				if got != expected {
-					// Report an error if the actual output doesn't match the expected output
-					t.Errorf("For n = %d, expected:\n%q\nbut got:\n%q", n, expected, got)
-				}
+
+				expected := generateExpectedFizzBuzz(n) // Generate the expected FizzBuzz output for the current number
+				got := fizzBuzz(n)                      // Call the fizzBuzz function to get the actual output
+
+				assertFizzBuzzOutput(t, n, got, expected) // Compare the expected and actual FizzBuzz output
 			})
 		}
 	})
 
-	// Test for values more then 100
+	// Test for FizzBuzz output limit for 100
 	t.Run("testing FizzBuzz output limit for 100", func(t *testing.T) {
-		n := 100                             // Define the upper limit of the FizzBuzz sequence
-		output := fizzBuzz(n)                // Generate the FizzBuzz sequence for the specified limit
+		n := 100 // Define the upper limit of the FizzBuzz sequence
+
+		output := fizzBuzz(n) // Generate the FizzBuzz sequence for the specified limit
+
 		lines := strings.Split(output, "\n") // Split the output into lines
 
 		for _, line := range lines { // Iterate through each line of the output
+
 			num, err := strconv.Atoi(line) // Convert the line to an integer
 			if err != nil {
 				continue // Skip non-numeric lines
@@ -80,28 +89,25 @@ func TestFizzBuzz(t *testing.T) {
 
 	// Test for NaN generation
 	t.Run("testing NaN generation", func(t *testing.T) {
-		n := 0 // define input value for testing
 
-		expected := "NaN\n" // expected output for the input
+		n := 0 // Define input value for testing
 
-		got := fizzBuzz(n) // call fizzBuzz function
+		expected := "NaN\n" // Expected output for the input
+		got := fizzBuzz(n)  // Call fizzBuzz function
 
-		if got != expected { // compare the expected and the actual output
-			t.Errorf("For n = %d, expected:\n%s\nbut got:\n%s", n, expected, got) // if no match no error report
-		}
+		assertFizzBuzzOutput(t, n, got, expected) // Compare the expected and actual output
 	})
 
 	// Test for negative numbers between 1 and 100
 	t.Run("Testing negative numbers between 1 and 100", func(t *testing.T) {
-		// Iterate through numbers from 1 to 100
+
 		for num := 1; num <= 100; num++ {
+
 			got := fizzBuzz(num) // Generate the FizzBuzz sequence for the current number
 
-			// Check if the output contains "Negative numbers"
 			if got == "Negative numbers\n" { // If the output contains the message "Negative numbers"
 				t.Errorf("For num = %d, negative number generated: %s", num, got) // Report an error
 			}
 		}
 	})
-
 }
